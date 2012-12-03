@@ -123,6 +123,9 @@ class RscMemberSubmissionPostProcessor extends Backend
 				else if ($parts[1] == "gender") {
 					$textArray[$count] = $GLOBALS['TL_LANG']['MSC'][$member->$parts[1]];
 				}
+				else if ($parts[1] == "xt_club_swimflat") {
+					$textArray[$count] = strlen($member->$parts[1]) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
+				}
 				else
 				{
 					$value = $member->$parts[1];
