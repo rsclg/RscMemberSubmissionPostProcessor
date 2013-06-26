@@ -43,8 +43,11 @@ class RscMemberSubmissionPostProcessor extends Backend
 	{
 		parent::__construct();
 		$this->loadLanguageFile("tl_settings");
+		$this->import('BackendUser', 'User');
+		$this->import('Environment');
 	} 
-/**
+
+	/**
 	 * Executes actions after a submission of a member.
 	 * @param DataContainer
 	 */
@@ -299,8 +302,75 @@ class RscMemberSubmissionPostProcessor extends Backend
 	{
 		if ($this->isActionAllowed('create_welcome_document') && $this->isMemberNew($member))
 		{
-			echo "create_welcome_document not yet implemented";
+			$timeNow = time();
+		
+			$arrSet = array
+			(
+				'sorting'         => 0,
+				'tstamp'          => $timeNow,
+				'fd_member'       => $this->User->assignedMember,
+				'fd_user'         => 0,
+				'fd_member_group' => 0,
+				'fd_user_group'   => 0,
+				'form'            => '',
+				'ip'              => $this->Environment->ip,
+				'date'            => $timeNow,
+				'published'       => ($GLOBALS['TL_DCA']['tl_formdata']['fields']['published']['default'] == '1' ? '1' : '' ),
+				'be_notes'        => 'Automatisch erstellter Datensatz (RscMemberSubmissionPostProcessor->createWelcomeDocument()'
+			);
+		
+			$objNewFormdata = $this->Database->prepare("INSERT INTO tl_formdata %s")->set($arrSet)->execute();
+			$intNewId = $objNewFormdata->insertId;
+			
+			// set form name and alias
+			$this->Database->prepare("UPDATE tl_formdata SET form = (SELECT title FROM tl_form WHERE id = ?), alias = ? WHERE id = ?")
+						   ->execute(array(intval($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorWelcomeForm']), strval($intNewId), $intNewId));
+			
+			// now add the form data details
+			$arrFormFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE pid = ? AND invisible = ''")
+											->execute(intval($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorWelcomeForm']))
+											->fetchAllAssoc();
+			
+			foreach ($arrFormFields as $formField)
+			{
+				$value = '';
+				if ($formField['name'] == 'member')
+				{
+					$value = $member->id;
+				}
+				else if ($formField['name'] == 'send')
+				{
+					$value = 'Nein';
+				}
+					
+				$this->addWelcomeDocumentFormDataDetails($intNewId, $timeNow, $formField, strval($value));
+			}
 		}
+	}
+	
+	/**
+	 * Adds the form data details for a welcome document.
+	 * 
+	 * @param unknown_type $formDataId The id of the form data record.
+	 * @param unknown_type $tstamp The actual time stamp.
+	 * @param unknown_type $formField The form field to add the data for.
+	 * @param unknown_type $strValue The value to set.
+	 */
+	private function addWelcomeDocumentFormDataDetails ($formDataId, $tstamp, $formField, $strValue)
+	{
+		$arrFieldSet = array
+		(
+				'pid'      => $formDataId,
+				'sorting'  => $formField['sorting'],
+				'tstamp'   => $tstamp,
+				'ff_id'    => $formField['id'],
+				'ff_type'  => $formField['type'],
+				'ff_name'  => $formField['name'],
+				'ff_label' => $formField['label'],
+				'value'    => $strValue
+		);
+			
+		$objNewFormdataDetails = $this->Database->prepare("INSERT INTO tl_formdata_details %s")->set($arrFieldSet)->execute();
 	}
 	
 	/**
