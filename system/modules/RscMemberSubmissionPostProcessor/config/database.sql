@@ -16,4 +16,5 @@ UPDATE rcb_contacts SET rsc_member_number = (SELECT xt_club_membernumber FROM tl
 
 -- add view that are expected from contao
 CREATE OR REPLACE VIEW rcb2cto_contactgroups (id, name, tstamp) AS SELECT contactgroup_id, name, changed FROM rcb_contactgroups;
+CREATE OR REPLACE VIEW rcb2cto_contacts (id, tstamp, name, firstname, lastname, email, member_number, user_id) AS SELECT contact_id, changed, name, firstname, surname, email, rsc_member_number, user_id FROM rcb_contacts WHERE del = 0;
 CREATE OR REPLACE VIEW rcb2cto_users (id, name, tstamp) AS SELECT user_id, username, created FROM rcb_users;
