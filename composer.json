@@ -1,0 +1,39 @@
+{
+	"name":"rsclg/member-submission-post-processor",
+	"description":"Perform additional actions after registration of a new member in the RSC web system.",
+	"keywords":["contao", "member", "registration", "post processor"],
+	"type":"contao-module",
+	"license":"LGPL-3.0+",
+	"authors":[
+		{
+			"name":"Cliff Parnitzky",
+			"email":"contao@cliff-parnitzky.de",
+			"role":"Developer"
+		}
+	],
+	"support":{
+		"email":"contao@cliff-parnitzky.de",
+		"issues":"https://github.com/rsclg/RscMemberSubmissionPostProcessor/issues",
+		"source":"https://github.com/rsclg/RscMemberSubmissionPostProcessor"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":">=3.2.0,<3.5",
+		"contao-community-alliance/composer-plugin":"~2.0", 
+		"contao-legacy/associategroups":">=1.2.1",
+		"rsclg/club-member-fields":"~1.0"
+	},
+	"conflict": {
+		"contao/core":"3.4.0,3.4.1,3.4.2"
+	},
+	"extra":{
+		"contao":{
+			"sources":{
+				"system/modules/RscMemberSubmissionPostProcessor":"system/modules/RscMemberSubmissionPostProcessor"
+			}
+		},
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
+}
