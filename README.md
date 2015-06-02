@@ -20,16 +20,16 @@ If you prefer to install it manually, download the latest release here: https://
 
 Execute the following database script to ensure Contao to Roundcube connection:
 
-````
+```
 -- add the member number as new column, to get an reference value
-ALTER TABLE `rcb_contacts` ADD `rsc_member_number` INT( 4 ) UNSIGNED;
+ALTER TABLE rcb_contacts ADD rsc_member_number INT( 4 ) UNSIGNED;
 UPDATE rcb_contacts SET rsc_member_number = (SELECT xt_club_membernumber FROM tl_member WHERE rcb_contacts.name = CONCAT(tl_member.firstname, " ", tl_member.lastname));
 
 -- add view that are expected from contao
 CREATE OR REPLACE VIEW rcb2cto_contactgroups (id, name, tstamp) AS SELECT contactgroup_id, name, changed FROM rcb_contactgroups;
 CREATE OR REPLACE VIEW rcb2cto_contacts (id, tstamp, name, firstname, lastname, email, member_number, user_id) AS SELECT contact_id, changed, name, firstname, surname, email, rsc_member_number, user_id FROM rcb_contacts WHERE del = 0;
 CREATE OR REPLACE VIEW rcb2cto_users (id, name, tstamp) AS SELECT user_id, username, created FROM rcb_users;
-````
+```
 
 
 Tracker
@@ -48,4 +48,4 @@ Compatibility
 Dependency
 ----------
 
-- This extension is dependent on the following extensions: [[contao-legacy/associategroups]](https://legacy-packages-via.contao-community-alliance.org/packages/contao-legacy/associategroups), [[rsclg/club-member-fields]](https://packagist.org/packages/rsclg/club-member-fields)
+- This extension is dependent on the following extensions: [[contao-legacy/associategroups]](https://legacy-packages-via.contao-community-alliance.org/packages/contao-legacy/associategroups), [[rsclg/club-member-fields]](https://packagist.org/packages/rsclg/club-member-fields), [[cliffparnitzky/user-member-bridge]](https://packagist.org/packages/cliffparnitzky/user-member-bridge)
