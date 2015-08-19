@@ -20,7 +20,7 @@
 		"php":">=5.3",
 		"contao/core":">=3.2.0,<3.5",
 		"contao-community-alliance/composer-plugin":"~2.0", 
-		"contao-legacy/associategroups":">=1.2.1",
+		"friends-of-contao/contao-associategroups":"~1.3",
 		"rsclg/club-member-fields":"~1.0",
 		"cliffparnitzky/user-member-bridge":"~1.2"
 	},
