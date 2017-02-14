@@ -42,10 +42,14 @@ Compatibility
 -------------
 
 - min. Contao version: >= 3.3.0
-- max. Contao version: <  3.5.0
+- max. Contao version: <  3.6.0
 
 
 Dependency
 ----------
 
-- This extension is dependent on the following extensions: [[contao-legacy/associategroups]](https://legacy-packages-via.contao-community-alliance.org/packages/contao-legacy/associategroups), [[rsclg/club-member-fields]](https://packagist.org/packages/rsclg/club-member-fields), [[cliffparnitzky/user-member-bridge]](https://packagist.org/packages/cliffparnitzky/user-member-bridge)
+This extension is dependent on the following extensions:
+
+- [[cliffparnitzky/user-member-bridge]](https://packagist.org/packages/cliffparnitzky/user-member-bridge)
+- [[friends-of-contao/contao-associategroups]](https://packagist.org/packages/friends-of-contao/contao-associategroups)
+- [[rsclg/club-member-fields]](https://packagist.org/packages/rsclg/club-member-fields)
