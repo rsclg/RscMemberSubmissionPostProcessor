@@ -73,14 +73,6 @@ class RscMemberSubmissionPostProcessor extends Backend
 	{
 		if ($this->isActionAllowed('send_email') && $this->isMemberNew($member))
 		{
-			// first check if required extension 'ExtendedEmailRegex' is installed
-			if (!in_array('extendedEmailRegex', $this->Config->getActiveModules()))
-			{
-				$this->log('RscMemberSubmissionPostProcessor: Extension "ExtendedEmailRegex" is required!', 'RscMemberSubmissionPostProcessor sendInformationMail()', TL_ERROR);
-				return false;
-			} 
-			$this->import('ExtendedEmailRegex', 'Base');
-			
 			$objEmail = new Email();
 
 			$objEmail->logFile = 'RscMemberSubmissionPostProcessorEmail.log';
@@ -93,7 +85,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 			
 			try
 			{
-				$objEmail->sendTo(ExtendedEmailRegex::getEmailsFromList($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorEmailReceiver']));
+				$objEmail->sendTo(explode(',', $GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorEmailReceiver']));
 				return true;
 			}
 			catch (Swift_RfcComplianceException $e)
@@ -121,17 +113,17 @@ class RscMemberSubmissionPostProcessor extends Backend
 					$textArray[$count] = '';
 				}
 				else if ($parts[1] == "dateOfBirth") {
-					$textArray[$count] = date($GLOBALS['TL_CONFIG']['dateFormat'], $member->$parts[1]);
+					$textArray[$count] = date($GLOBALS['TL_CONFIG']['dateFormat'], $member->{$parts[1]});
 				}
 				else if ($parts[1] == "gender") {
-					$textArray[$count] = $GLOBALS['TL_LANG']['MSC'][$member->$parts[1]];
+					$textArray[$count] = $GLOBALS['TL_LANG']['MSC'][$member->{$parts[1]}];
 				}
 				else if ($parts[1] == "xt_club_swimflat") {
-					$textArray[$count] = strlen($member->$parts[1]) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
+					$textArray[$count] = strlen($member->{$parts[1]}) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
 				}
 				else
 				{
-					$value = $member->$parts[1];
+					$value = $member->{$parts[1]};
 					if (is_array($value)) {
 						if ($parts[1] == "groups") {
 							$value = $this->getArrayValueAsList("tl_member_group", "name", $value);
@@ -142,7 +134,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 			}
 			else if ($parts[0] == "actions")
 			{
-				$allowedActions = deserialize($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorActions']);
+				$allowedActions = deserialize($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorActions'], true);
 				if (is_array($allowedActions))
 				{
 					$actionsList = "<ul> ";
@@ -166,7 +158,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 	{
 		if (strlen($table) > 0 && is_array($array) && count($array) > 0)
 		{
-			$ids = implode(", ", deserialize($array));
+			$ids = implode(", ", deserialize($array, true));
 			$values = $this->Database->prepare("SELECT " . $fieldname . " FROM " . $table . " WHERE id IN (" . $ids . ") ORDER BY name ASC")
 								->execute();
 			$list = array();
@@ -200,7 +192,8 @@ class RscMemberSubmissionPostProcessor extends Backend
 	{
 		if ($this->isActionAllowed('create_resultlist_generator_userlist'))
 		{
-			$filePath = $GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorResultlistGeneratorUserlistFilePath'] . 'user.js';
+			$filePath = \FilesModel::findByUuid($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorResultlistGeneratorUserlistFilePath'])->path . '/user.js';
+
 			
 			// first check if required extension 'associategroups' is installed
 			if (!in_array('associategroups', $this->Config->getActiveModules()))
@@ -256,7 +249,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 			{
 				$line .= ",";
 			}
-			$file->append(utf8_decode($line));
+			$file->append($line);
 		}
 	}
 
@@ -378,7 +371,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 	 */
 	private function isMemberNew ($member)
 	{
-		return ($member && $member->dateAdded == 0);
+		return ($member && $member->tstamp == 0);
 	}
 	
 	/**
@@ -386,7 +379,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 	 */
 	private function isMemberInRelevantGroup ($member)
 	{
-		$memberGroups = deserialize($member->groups);
+		$memberGroups = deserialize($member->groups, true);
 		if (is_array($memberGroups))
 		{
 			foreach ($memberGroups as $group)
@@ -406,7 +399,7 @@ class RscMemberSubmissionPostProcessor extends Backend
 	 */
 	private function isActionAllowed ($action)
 	{
-		$allowedActions = deserialize($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorActions']);
+		$allowedActions = deserialize($GLOBALS['TL_CONFIG']['rscMemberSubmissionPostProcessorActions'], true);
 		if (is_array($allowedActions))
 		{
 			foreach ($allowedActions as $allowedAction)
