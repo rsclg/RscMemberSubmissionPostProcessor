@@ -61,7 +61,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['rscMemberSubmissionPostProcessorRes
 (
 	'label'               => &$GLOBALS['TL_LANG']['tl_settings']['rscMemberSubmissionPostProcessorResultlistGeneratorUserlistFilePath'],
 	'inputType'           => 'fileTree',
-	'eval'                => array('mandatory'=>true, 'tl_class'=>'clr', 'files'=>false, 'path'=>'tl_files', 'trailingSlash'=>true, 'fieldType'=>'radio', 'extensions'=>'')
+	'eval'                => array('mandatory'=>true, 'tl_class'=>'clr', 'files'=>false, 'trailingSlash'=>true, 'fieldType'=>'radio', 'extensions'=>'')
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['rscMemberSubmissionPostProcessorWebmailAddressbookOwner'] = array
